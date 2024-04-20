@@ -27,6 +27,7 @@
           ? controller.methods[controller.methods.length - 1].id + 1
           : 0,
         chain: [],
+        name: "",
       },
     ];
     hide = false;
