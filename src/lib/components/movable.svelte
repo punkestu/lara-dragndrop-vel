@@ -42,7 +42,7 @@
 </script>
 
 <div
-  class={`absolute min-w-96 flex gap-2 drop-shadow-lg shadow-black ${className}`}
+  class={`absolute min-w-96 flex gap-2 shadow-[0_0_15px_-5px_rgba(0,0,0,0.3)] shadow-black ${className}`}
   bind:this={card}
 >
   <button
