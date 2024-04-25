@@ -5,7 +5,10 @@
   import { models, controllers, routes } from "./lib/store/metadata";
   import { zoomLevel, origin, panning } from "./lib/store/global";
   import Modal from "./lib/components/modal.svelte";
-
+  import {
+    Add as AddIcon,
+    Download as DownloadIcon,
+  } from "carbon-icons-svelte";
   import { compressSync, strToU8 } from "fflate";
 
   let clientWidth, clientHeight;
@@ -156,7 +159,7 @@
         routes: $routes,
       })
     )}
-  download={`${projectName}.meta`}
+  download={`${projectName}.dnd`}
   class="hidden">download</a
 >
 
@@ -170,27 +173,27 @@
       class="text-center bg-transparent border-transparent focus:border-transparent focus:ring-0 focus:border-black duration-300 outline-none placeholder:text-slate-700 p-2"
       placeholder="Project Name"
     />
-    <div class="w-full text-blue-500 flex gap-[1px] h-[2rem]">
+    <div class="w-full text-blue-500 flex gap-[2px] h-[2rem]">
       <button
         on:click={getMeta}
-        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
-        >Get Metadata</button
+        class="flex items-center bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+        ><DownloadIcon /> Metadata</button
       >
       <button
         on:click={addModel}
-        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
-        >Add Model</button
+        class="flex items-center bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+        ><AddIcon />Model</button
       >
       <button
         on:click={addController}
-        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
-        >Add Controller</button
+        class="flex items-center bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+        ><AddIcon />Controller</button
       >
       <button
         on:click={addRoute}
-        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+        class="flex items-center bg-white px-2 py-1 hover:bg-slate-100 duration-300"
       >
-        Add Route
+        <AddIcon />Route
       </button>
     </div>
   </header>
