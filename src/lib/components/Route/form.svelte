@@ -8,6 +8,7 @@
   } from "carbon-icons-svelte";
   import { metadata } from "../../store/metadata";
   import { httpMethods } from "./const";
+  import Button from "../ui/button.svelte";
 
   export let route;
 
@@ -45,26 +46,18 @@
       </label>
     </div>
     <div>
-      <button
-        class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        type="button"
-        on:click={deleteRoute}><DeleteIcon /></button
-      >
-      <button
-        class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        type="button"
-        on:click={toggleVisibility}
+      <Button onclick={deleteRoute}><DeleteIcon /></Button>
+      <Button onclick={toggleVisibility}
         >{#if hide}
           <ViewIcon />
         {:else}
           <ViewOffIcon />
-        {/if}</button
+        {/if}</Button
       >
     </div>
     {#if !hide}
-      <button
-        class="w-full flex justify-center items-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        ><AddIcon />Add Middleware</button
+      <Button onclick={() => {}} class="w-full flex justify-center items-center"
+        ><AddIcon /> Middleware</Button
       >
       <div>
         <select bind:value={route.controller}>

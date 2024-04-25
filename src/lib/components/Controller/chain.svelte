@@ -9,6 +9,7 @@
   import Return from "./methods/return.svelte";
   import If from "./methods/if.svelte";
   import { chainCmd } from "./const";
+  import Button from "../ui/button.svelte";
 
   export let chain;
   export let onDelete;
@@ -31,7 +32,7 @@
       chain.chain = undefined;
     }
   };
-  
+
   $: cmdTrigger();
 </script>
 
@@ -43,19 +44,16 @@
         <option value={cmd}>{cmd.toUpperCase()}</option>
       {/each}
     </select>
-    <button
-      class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={toggleVisibility}
-      >{#if hide}
+    <Button onclick={toggleVisibility}>
+      {#if hide}
         <ViewIcon />
       {:else}
         <ViewOffIcon />
-      {/if}</button
-    >
-    <button
-      class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={onDelete}><DeleteIcon /></button
-    >
+      {/if}
+    </Button>
+    <Button onclick={onDelete}>
+      <DeleteIcon />
+    </Button>
     {#if chain.type === "declare"}
       <input
         type="text"
@@ -72,9 +70,9 @@
       {#if chain.type === "return"}
         <Return bind:chain />
       {/if}
-      {#if chain.type === "if"}
+      <!-- {#if chain.type === "if"}
         <If bind:chain />
-      {/if}
+      {/if} -->
     </div>
   {/if}
 </div>

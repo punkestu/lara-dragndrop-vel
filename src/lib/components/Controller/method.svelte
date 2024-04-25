@@ -8,6 +8,7 @@
     ViewOff as ViewOffIcon,
   } from "carbon-icons-svelte";
   import { utilFactory } from "../../factory/utilFactory";
+  import Button from "../ui/button.svelte";
 
   export let method;
   export let onDelete;
@@ -29,21 +30,16 @@
 
 <div class="w-full flex flex-col gap-2 bg-red-400 p-2">
   <div class="flex gap-2">
-    <button
-      class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      type="button"
-      on:click={toggleVisibility}
-      >{#if hide}
+    <Button onclick={toggleVisibility}>
+      {#if hide}
         <ViewIcon />
       {:else}
         <ViewOffIcon />
-      {/if}</button
-    >
-    <button
-      class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      type="button"
-      on:click={onDelete}><DeleteIcon /></button
-    >
+      {/if}
+    </Button>
+    <Button onclick={onDelete}>
+      <DeleteIcon />
+    </Button>
     <input
       type="text"
       placeholder="Method name"
@@ -55,9 +51,6 @@
     {#each method.chain as chain (chain.id)}
       <Chain {chain} onDelete={() => deleteChain(chain.id)} />
     {/each}
-    <button
-      class="flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={addChain}><AddIcon /></button
-    >
+    <Button class="flex justify-center" onclick={addChain}><AddIcon /></Button>
   {/if}
 </div>

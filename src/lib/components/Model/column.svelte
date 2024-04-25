@@ -1,5 +1,6 @@
 <script>
   import { metadata } from "../../store/metadata";
+  import Button from "../ui/button.svelte";
   import { Types } from "./const";
   import {
     Delete as DeleteIcon,
@@ -11,7 +12,7 @@
   export let onDeleteColumn;
 
   let hide = false;
-  
+
   const clearColumn = (column) => {
     if (column.type === "string") {
       column.length = column.length === undefined ? 255 : column.length;
@@ -31,21 +32,14 @@
 </script>
 
 <div class="w-full flex gap-1">
-  <button
-    class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-    type="button"
-    on:click={toggleVisibility}
+  <Button onclick={toggleVisibility}
     >{#if hide}
       <ViewIcon />
     {:else}
       <ViewOffIcon />
-    {/if}</button
+    {/if}</Button
   >
-  <button
-    class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-    type="button"
-    on:click={onDeleteColumn}><DeleteIcon /></button
-  >
+  <Button onclick={onDeleteColumn}><DeleteIcon /></Button>
   <input
     type="text"
     placeholder="Column name"

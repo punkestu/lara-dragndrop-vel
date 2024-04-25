@@ -10,6 +10,7 @@
     ViewOff as ViewOffIcon,
   } from "carbon-icons-svelte";
   import { utilFactory } from "../../factory/utilFactory";
+  import Button from "../ui/button.svelte";
 
   export let controller;
 
@@ -45,26 +46,17 @@
       />
     </div>
     <div>
-      <button
-        class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        type="button"
-        on:click={deleteController}><DeleteIcon /></button
-      >
-      <button
-        class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        type="button"
-        on:click={addMethod}><AddIcon /></button
-      >
+      <Button onclick={deleteController}>
+        <DeleteIcon />
+      </Button>
+      <Button onclick={addMethod}><AddIcon /></Button>
       {#if controller.methods && controller.methods.length > 0}
-        <button
-          class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-          type="button"
-          on:click={toggleVisibility}
+        <Button onclick={toggleVisibility}
           >{#if hide}
             <ViewIcon />
           {:else}
             <ViewOffIcon />
-          {/if}</button
+          {/if}</Button
         >
       {/if}
     </div>

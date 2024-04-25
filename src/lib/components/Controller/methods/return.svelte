@@ -2,7 +2,38 @@
   import { Add as AddIcon, Delete as DeleteIcon } from "carbon-icons-svelte";
   import { metadata } from "../../../store/metadata";
   import { returnType } from "../const";
+  import Button from "../../ui/button.svelte";
   export let chain;
+
+  const deleteWhere = (id) => {
+    chain.where = chain.where.filter((w) => w.id !== id);
+  };
+  const addWhere = () => {
+    chain.where = [
+      ...(chain.where || []),
+      {
+        id:
+          chain.where && chain.where[chain.where.length - 1]
+            ? chain.where[chain.where.length - 1].id + 1
+            : 0,
+        connection: chain.where && chain.where.length > 0 ? "and" : undefined,
+      },
+    ];
+  };
+  const deleteSession = (id) => {
+    chain.session = chain.session.filter((s) => s.id !== id);
+  };
+  const addSession = () => {
+    chain.session = [
+      ...(chain.session || []),
+      {
+        id:
+          chain.session && chain.session[chain.session.length - 1]
+            ? chain.session[chain.session.length - 1].id + 1
+            : 0,
+      },
+    ];
+  };
 
   $: selectedModel = $metadata.find(
     (meta) => meta.ty === "model" && meta.name === chain.model
@@ -92,31 +123,16 @@
             placeholder="Operator"
           />
           <input type="text" bind:value={where.value} placeholder="Value" />
-          <button
-            class="flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-            on:click={() =>
-              (chain.where = chain.where.filter((w) => w.id !== where.id))}
-            ><DeleteIcon /></button
+          <Button
+            class="flex justify-center"
+            onclick={() => deleteWhere(where.id)}><DeleteIcon /></Button
           >
         </div>
       {/each}
     </div>
-    <button
-      class="w-full flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={() => {
-        chain.where = [
-          ...(chain.where || []),
-          {
-            id:
-              chain.where && chain.where[chain.where.length - 1]
-                ? chain.where[chain.where.length - 1].id + 1
-                : 0,
-            connection:
-              chain.where && chain.where.length > 0 ? "and" : undefined,
-          },
-        ];
-      }}><AddIcon /></button
-    >
+    <Button class="w-full flex justify-center" onclick={addWhere}>
+      <AddIcon />
+    </Button>
   {/if}
 {/if}
 {#if chain.returnType === "response"}
@@ -130,28 +146,15 @@
             bind:value={session.content}
             placeholder="name: session value"
           />
-          <button
-            class="flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-            on:click={() =>
-              (chain.session = chain.session.filter(
-                (sess) => sess.id !== session.id
-              ))}><DeleteIcon /></button
+          <Button
+            class="flex justify-center"
+            onclick={() => deleteSession(session.id)}><DeleteIcon /></Button
           >
         </div>
       {/each}
     </div>
-    <button
-      class="mt-2 flex justify-center w-full bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      type="button"
-      on:click={() =>
-        (chain.session = [
-          ...(chain.session || []),
-          {
-            id: chain.session[chain.session.length - 1]
-              ? chain.session[chain.session.length - 1].id + 1
-              : 0,
-          },
-        ])}><AddIcon /></button
+    <Button class="mt-2 flex justify-center w-full" onclick={addSession}
+      ><AddIcon /></Button
     >
   {/if}
 {/if}
