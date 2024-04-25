@@ -1,13 +1,14 @@
 <script>
   import { onMount } from "svelte";
-  export let position = { x: 0, y: 0 };
+  import { zoomLevel, panning } from "../store/global";
+  export let position;
 
   let className = "";
   export { className as class };
 
   onMount(() => {
-    card.style.top = position.x;
-    card.style.left = position.y;
+    card.style.top = position ? position.x : 0;
+    card.style.left = position ? position.y : 0;
   });
 
   let newX = 0,
@@ -16,6 +17,7 @@
     startY = 0;
   let card;
   const onMouseDown = (e) => {
+    $panning = false;
     startX = e.clientX;
     startY = e.clientY;
 
@@ -24,19 +26,20 @@
   };
 
   function mouseMove(e) {
-    newX = startX - e.clientX;
-    newY = startY - e.clientY;
+    newX = (startX - e.clientX) * (1 / $zoomLevel);
+    newY = (startY - e.clientY) * (1 / $zoomLevel);
 
     startX = e.clientX;
     startY = e.clientY;
 
-    if (card.offsetTop - newY < 0 || card.offsetLeft - newX < 0) return;
+    // if (card.offsetTop - newY < 0 || card.offsetLeft - newX < 0) return;
     card.style.top = card.offsetTop - newY + "px";
     card.style.left = card.offsetLeft - newX + "px";
     position = { x: card.style.top, y: card.style.left };
   }
 
   function mouseUp() {
+    $panning = true;
     document.removeEventListener("mousemove", mouseMove);
   }
 </script>

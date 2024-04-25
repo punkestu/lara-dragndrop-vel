@@ -74,7 +74,7 @@
     </div>
     {#if !hide}
       {#each model.columns || [] as column (column.id)}
-        <Column {column} onDeleteColumn={() => deleteColumn(column.id)} />
+        <Column bind:column onDeleteColumn={() => deleteColumn(column.id)} />
       {/each}
     {/if}
   </aside>
