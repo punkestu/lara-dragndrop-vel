@@ -62,7 +62,7 @@
     </div>
     {#if !hide}
       {#each controller.methods || [] as method (method.id)}
-        <Method {method} onDelete={() => deleteMethod(method.id)} />
+        <Method bind:method onDelete={() => deleteMethod(method.id)} />
       {/each}
     {/if}
   </aside>

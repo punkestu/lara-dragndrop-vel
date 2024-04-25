@@ -1,6 +1,7 @@
 <script>
   import { metadata } from "../../store/metadata";
   import Button from "../ui/button.svelte";
+  import Dropdown from "../ui/dropdown.svelte";
   import { Types } from "./const";
   import {
     Delete as DeleteIcon,
@@ -47,12 +48,11 @@
     bind:value={column.name}
   />
   {#if !hide}
-    <select bind:value={column.type}>
-      <option value="">Select Type</option>
+    <Dropdown bind:value={column.type} placeholder="Select Type">
       {#each Types as type}
         <option value={type}>{type.toUpperCase()}</option>
       {/each}
-    </select>
+    </Dropdown>
     {#if column.type === "string"}
       <input
         class="px-1"
@@ -62,12 +62,11 @@
       />
     {/if}
     {#if column.type === "foreignId"}
-      <select bind:value={column.relation}>
-        <option value="">Select a model</option>
+      <Dropdown bind:value={column.relation} placeholder="Select Model">
         {#each models as cModel (cModel.id)}
           <option value={cModel.name}>{cModel.name || "no-name"}</option>
         {/each}
-      </select>
+      </Dropdown>
     {/if}
     <label class="flex gap-1 items-center text-slate-50">
       <input type="checkbox" bind:checked={column.nullable} />

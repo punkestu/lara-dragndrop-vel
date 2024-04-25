@@ -4,3 +4,4 @@ export const chainCmd = [
   // "if"
 ];
 export const returnType = ["expression", "model", "response"];
+export const modelOps = ["find", "all", "where"];

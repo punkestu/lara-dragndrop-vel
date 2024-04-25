@@ -9,6 +9,7 @@
   import { metadata } from "../../store/metadata";
   import { httpMethods } from "./const";
   import Button from "../ui/button.svelte";
+  import Dropdown from "../ui/dropdown.svelte";
 
   export let route;
 
@@ -34,12 +35,11 @@
         bind:value={route.path}
         class="bg-transparent border-transparent focus:border-transparent focus:ring-0 focus:border-b-4 focus:border-black duration-300 outline-none placeholder:text-slate-400 focus:px-2 py-1"
       />
-      <select bind:value={route.httpMethod}>
-        <option value="">Method</option>
+      <Dropdown bind:value={route.httpMethod} placeholder="Method">
         {#each httpMethods as meth}
           <option value={meth}>{meth.toUpperCase()}</option>
         {/each}
-      </select>
+      </Dropdown>
       <label>
         <input type="checkbox" bind:checked={route.api} />
         API
@@ -60,26 +60,29 @@
         ><AddIcon /> Middleware</Button
       >
       <div>
-        <select bind:value={route.controller}>
-          <option value="">Select Controller</option>
+        <Dropdown bind:value={route.controller} placeholder="Select Controller">
           {#each controllers as controller}
             {#if controller.name}
               <option value={controller.name}>{controller.name}</option>
             {/if}
           {/each}
-        </select>
-        <select bind:value={route.method}>
+        </Dropdown>
+        <Dropdown
+          bind:value={route.method}
+          placeholder={selectedController &&
+          selectedController.methods &&
+          selectedController.methods.length > 0
+            ? "Select Method"
+            : "No Method"}
+        >
           {#if selectedController && selectedController.methods && selectedController.methods.length > 0}
-            <option value="">Select Method</option>
             {#each selectedController.methods as method}
-              {#if method}
+              {#if method.name}
                 <option value={method.name}>{method.name}</option>
               {/if}
             {/each}
-          {:else}
-            <option value="">No Method</option>
           {/if}
-        </select>
+        </Dropdown>
       </div>
     {/if}
   </aside>

@@ -1,8 +1,9 @@
 <script>
   import { Add as AddIcon, Delete as DeleteIcon } from "carbon-icons-svelte";
   import { metadata } from "../../../store/metadata";
-  import { returnType } from "../const";
+  import { modelOps, returnType } from "../const";
   import Button from "../../ui/button.svelte";
+  import Dropdown from "../../ui/dropdown.svelte";
   export let chain;
 
   const deleteWhere = (id) => {
@@ -42,12 +43,11 @@
 </script>
 
 <div class="flex">
-  <select bind:value={chain.returnType}>
-    <option value="">Select Return Type</option>
+  <Dropdown bind:value={chain.returnType} placeholder="Select Return Type">
     {#each returnType as ty}
       <option value={ty}>{ty.toUpperCase()}</option>
     {/each}
-  </select>
+  </Dropdown>
   {#if chain.returnType === "expression"}
     <input
       type="text"
@@ -56,25 +56,27 @@
     />
   {/if}
   {#if chain.returnType === "model"}
-    <select bind:value={chain.model}>
-      {#if models.filter((meta) => meta.name).length === 0}
-        <option value="">No Models</option>
-      {:else}
-        <option value="">Select Model</option>
-      {/if}
+    <Dropdown
+      bind:value={chain.model}
+      placeholder={models.filter((meta) => meta.name).length === 0
+        ? "No Models"
+        : "Select Model"}
+    >
       {#each models as model}
         {#if model.name}
           <option value={model.name}>{model.name}</option>
         {/if}
       {/each}
-    </select>
+    </Dropdown>
     {#if chain.model}
-      <select bind:value={chain.modelOps}>
-        <option value="">Select Model Operation</option>
-        <option value="find">Find</option>
-        <option value="all">Get All</option>
-        <option value="where">Where</option>
-      </select>
+      <Dropdown
+        bind:value={chain.modelOps}
+        placeholder="Select Model Operation"
+      >
+        {#each modelOps as ops}
+          <option value={ops}>{ops.toUpperCase()}</option>
+        {/each}
+      </Dropdown>
     {/if}
   {/if}
   {#if chain.returnType === "response"}
@@ -104,19 +106,22 @@
       {#each chain.where || [] as where (where.id)}
         <div class="flex gap-1">
           {#if where.connection}
-            <select bind:value={where.connection}>
+            <Dropdown bind:value={where.connection}>
               <option value="and">AND</option>
               <option value="or">OR</option>
-            </select>
+            </Dropdown>
           {/if}
-          <select bind:value={where.field} class="flex-grow">
-            <option value="">Select column</option>
+          <Dropdown
+            bind:value={where.field}
+            class="flex-grow"
+            placeholder="Select Column"
+          >
             {#each selectedModel.columns as column}
               {#if column.name}
                 <option value={column.name}>{column.name}</option>
               {/if}
             {/each}
-          </select>
+          </Dropdown>
           <input
             type="text"
             bind:value={where.operator}

@@ -10,6 +10,7 @@
   import If from "./methods/if.svelte";
   import { chainCmd } from "./const";
   import Button from "../ui/button.svelte";
+  import Dropdown from "../ui/dropdown.svelte";
 
   export let chain;
   export let onDelete;
@@ -38,12 +39,11 @@
 
 <div class="p-2 ps-4 border">
   <div class="flex gap-2">
-    <select bind:value={chain.type}>
-      <option value="">Select Command</option>
+    <Dropdown bind:value={chain.type} placeholder="Select Command">
       {#each chainCmd as cmd}
         <option value={cmd}>{cmd.toUpperCase()}</option>
       {/each}
-    </select>
+    </Dropdown>
     <Button onclick={toggleVisibility}>
       {#if hide}
         <ViewIcon />
