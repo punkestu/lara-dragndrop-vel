@@ -1,5 +1,7 @@
 <script>
-  import { models } from "../../store/metadata";
+  import { metadata } from "../../store/metadata";
+  import Button from "../ui/button.svelte";
+  import Dropdown from "../ui/dropdown.svelte";
   import { Types } from "./const";
   import {
     Delete as DeleteIcon,
@@ -9,6 +11,8 @@
 
   export let column;
   export let onDeleteColumn;
+
+  let hide = false;
 
   const clearColumn = (column) => {
     if (column.type === "string") {
@@ -22,28 +26,21 @@
       column.relation = undefined;
     }
   };
+  const toggleVisibility = () => (hide = !hide);
 
   $: clearColumn(column);
-  let hide = false;
-  const toggleVisibility = () => (hide = !hide);
+  $: models = $metadata.filter((meta) => meta.ty === "model");
 </script>
 
 <div class="w-full flex gap-1">
-  <button
-    class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-    type="button"
-    on:click={toggleVisibility}
+  <Button onclick={toggleVisibility}
     >{#if hide}
       <ViewIcon />
     {:else}
       <ViewOffIcon />
-    {/if}</button
+    {/if}</Button
   >
-  <button
-    class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-    type="button"
-    on:click={onDeleteColumn}><DeleteIcon /></button
-  >
+  <Button onclick={onDeleteColumn}><DeleteIcon /></Button>
   <input
     type="text"
     placeholder="Column name"
@@ -51,11 +48,11 @@
     bind:value={column.name}
   />
   {#if !hide}
-    <select bind:value={column.type}>
+    <Dropdown bind:value={column.type} placeholder="Select Type">
       {#each Types as type}
         <option value={type}>{type.toUpperCase()}</option>
       {/each}
-    </select>
+    </Dropdown>
     {#if column.type === "string"}
       <input
         class="px-1"
@@ -65,12 +62,11 @@
       />
     {/if}
     {#if column.type === "foreignId"}
-      <select bind:value={column.relation}>
-        <option value="">Select a model</option>
-        {#each $models as cModel (cModel.id)}
+      <Dropdown bind:value={column.relation} placeholder="Select Model">
+        {#each models as cModel (cModel.id)}
           <option value={cModel.name}>{cModel.name || "no-name"}</option>
         {/each}
-      </select>
+      </Dropdown>
     {/if}
     <label class="flex gap-1 items-center text-slate-50">
       <input type="checkbox" bind:checked={column.nullable} />

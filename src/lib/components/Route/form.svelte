@@ -6,22 +6,27 @@
     View as ViewIcon,
     ViewOff as ViewOffIcon,
   } from "carbon-icons-svelte";
-  import { routes, controllers } from "../../store/metadata";
+  import { metadata } from "../../store/metadata";
+  import { httpMethods } from "./const";
+  import Button from "../ui/button.svelte";
+  import Dropdown from "../ui/dropdown.svelte";
 
   export let route;
 
-  const deleteModel = () =>
-    ($routes = $routes.filter((cRoute) => cRoute.id !== route.id));
+  const deleteRoute = () =>
+    confirm("Are you sure you want to delete this route?") &&
+    ($metadata = $metadata.filter((cMeta) => cMeta.id !== route.id));
   let hide = false;
   const toggleVisibility = () => (hide = !hide);
 
   $: route.method = route.controller && (route.method || "");
-  $: selectedController = $controllers.find(
-    (controller) => controller.name === route.controller
+  $: selectedController = $metadata.find(
+    (meta) => meta.ty === "controller" && meta.name === route.controller
   );
+  $: controllers = $metadata.filter((meta) => meta.ty === "controller");
 </script>
 
-<Movable bind:position={route.cardPosition} class="bg-white">
+<Movable bind:position={route.position} class="bg-white">
   <aside class="p-4 ps-2 flex flex-col gap-2">
     <div>
       <input
@@ -30,64 +35,54 @@
         bind:value={route.path}
         class="bg-transparent border-transparent focus:border-transparent focus:ring-0 focus:border-b-4 focus:border-black duration-300 outline-none placeholder:text-slate-400 focus:px-2 py-1"
       />
-      <select bind:value={route.httpMethod}>
-        <option value="">Method</option>
-        <option value="GET">GET</option>
-        <option value="POST">POST</option>
-        <option value="PUT">PUT</option>
-        <option value="DELETE">DELETE</option>
-      </select>
+      <Dropdown bind:value={route.httpMethod} placeholder="Method">
+        {#each httpMethods as meth}
+          <option value={meth}>{meth.toUpperCase()}</option>
+        {/each}
+      </Dropdown>
       <label>
         <input type="checkbox" bind:checked={route.api} />
         API
       </label>
     </div>
     <div>
-      <button
-        class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        type="button"
-        on:click={() => {
-          confirm("Are you sure you want to delete this route?") &&
-            deleteModel();
-        }}><DeleteIcon /></button
-      >
-      <button
-        class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        type="button"
-        on:click={toggleVisibility}
+      <Button onclick={deleteRoute}><DeleteIcon /></Button>
+      <Button onclick={toggleVisibility}
         >{#if hide}
           <ViewIcon />
         {:else}
           <ViewOffIcon />
-        {/if}</button
+        {/if}</Button
       >
     </div>
     {#if !hide}
-      <button
-        class="w-full flex justify-center items-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-        ><AddIcon />Add Middleware</button
+      <Button onclick={() => {}} class="w-full flex justify-center items-center"
+        ><AddIcon /> Middleware</Button
       >
       <div>
-        <select bind:value={route.controller}>
-          <option value="">Select Controller</option>
-          {#each $controllers as controller}
+        <Dropdown bind:value={route.controller} placeholder="Select Controller">
+          {#each controllers as controller}
             {#if controller.name}
               <option value={controller.name}>{controller.name}</option>
             {/if}
           {/each}
-        </select>
-        <select bind:value={route.method}>
+        </Dropdown>
+        <Dropdown
+          bind:value={route.method}
+          placeholder={selectedController &&
+          selectedController.methods &&
+          selectedController.methods.length > 0
+            ? "Select Method"
+            : "No Method"}
+        >
           {#if selectedController && selectedController.methods && selectedController.methods.length > 0}
-            <option value="">Select Method</option>
             {#each selectedController.methods as method}
-              {#if method}
+              {#if method.name}
                 <option value={method.name}>{method.name}</option>
               {/if}
             {/each}
-          {:else}
-            <option value="">No Method</option>
           {/if}
-        </select>
+        </Dropdown>
       </div>
     {/if}
   </aside>

@@ -8,6 +8,9 @@
   import Declare from "./methods/declare.svelte";
   import Return from "./methods/return.svelte";
   import If from "./methods/if.svelte";
+  import { chainCmd } from "./const";
+  import Button from "../ui/button.svelte";
+  import Dropdown from "../ui/dropdown.svelte";
 
   export let chain;
   export let onDelete;
@@ -16,7 +19,9 @@
     chain.session = chain.session || [];
   });
 
-  $: (() => {
+  let hide = false;
+  const toggleVisibility = () => (hide = !hide);
+  const cmdTrigger = () => {
     if (chain.type === "if") {
       chain.validChain = chain.validChain || [[], []];
     } else {
@@ -27,32 +32,28 @@
     } else {
       chain.chain = undefined;
     }
-  })();
+  };
 
-  let hide = false;
-  const toggleVisibility = () => (hide = !hide);
+  $: cmdTrigger();
 </script>
 
 <div class="p-2 ps-4 border">
   <div class="flex gap-2">
-    <select bind:value={chain.type}>
-      <option value="declare">Declare</option>
-      <option value="return">Return</option>
-      <option value="if">If</option>
-    </select>
-    <button
-      class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={toggleVisibility}
-      >{#if hide}
+    <Dropdown bind:value={chain.type} placeholder="Select Command">
+      {#each chainCmd as cmd}
+        <option value={cmd}>{cmd.toUpperCase()}</option>
+      {/each}
+    </Dropdown>
+    <Button onclick={toggleVisibility}>
+      {#if hide}
         <ViewIcon />
       {:else}
         <ViewOffIcon />
-      {/if}</button
-    >
-    <button
-      class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={onDelete}><DeleteIcon /></button
-    >
+      {/if}
+    </Button>
+    <Button onclick={onDelete}>
+      <DeleteIcon />
+    </Button>
     {#if chain.type === "declare"}
       <input
         type="text"
@@ -69,9 +70,9 @@
       {#if chain.type === "return"}
         <Return bind:chain />
       {/if}
-      {#if chain.type === "if"}
+      <!-- {#if chain.type === "if"}
         <If bind:chain />
-      {/if}
+      {/if} -->
     </div>
   {/if}
 </div>

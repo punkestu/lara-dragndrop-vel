@@ -1,17 +1,53 @@
 <script>
   import { Add as AddIcon, Delete as DeleteIcon } from "carbon-icons-svelte";
-  import { models } from "../../../store/metadata";
+  import { metadata } from "../../../store/metadata";
+  import { modelOps, returnType } from "../const";
+  import Button from "../../ui/button.svelte";
+  import Dropdown from "../../ui/dropdown.svelte";
   export let chain;
 
-  $: selectedModel = $models.find((model) => model.name === chain.model);
+  const deleteWhere = (id) => {
+    chain.where = chain.where.filter((w) => w.id !== id);
+  };
+  const addWhere = () => {
+    chain.where = [
+      ...(chain.where || []),
+      {
+        id:
+          chain.where && chain.where[chain.where.length - 1]
+            ? chain.where[chain.where.length - 1].id + 1
+            : 0,
+        connection: chain.where && chain.where.length > 0 ? "and" : undefined,
+      },
+    ];
+  };
+  const deleteSession = (id) => {
+    chain.session = chain.session.filter((s) => s.id !== id);
+  };
+  const addSession = () => {
+    chain.session = [
+      ...(chain.session || []),
+      {
+        id:
+          chain.session && chain.session[chain.session.length - 1]
+            ? chain.session[chain.session.length - 1].id + 1
+            : 0,
+      },
+    ];
+  };
+
+  $: selectedModel = $metadata.find(
+    (meta) => meta.ty === "model" && meta.name === chain.model
+  );
+  $: models = $metadata.filter((meta) => meta.ty === "model");
 </script>
 
 <div class="flex">
-  <select bind:value={chain.returnType}>
-    <option value="expression">Expression</option>
-    <option value="model">Model</option>
-    <option value="response">Response</option>
-  </select>
+  <Dropdown bind:value={chain.returnType} placeholder="Select Return Type">
+    {#each returnType as ty}
+      <option value={ty}>{ty.toUpperCase()}</option>
+    {/each}
+  </Dropdown>
   {#if chain.returnType === "expression"}
     <input
       type="text"
@@ -20,25 +56,27 @@
     />
   {/if}
   {#if chain.returnType === "model"}
-    <select bind:value={chain.model}>
-      {#if $models && $models.filter((model) => model.name).length === 0}
-        <option value="">No Models</option>
-      {:else}
-        <option value="">Select Model</option>
-      {/if}
-      {#each $models as model}
+    <Dropdown
+      bind:value={chain.model}
+      placeholder={models.filter((meta) => meta.name).length === 0
+        ? "No Models"
+        : "Select Model"}
+    >
+      {#each models as model}
         {#if model.name}
           <option value={model.name}>{model.name}</option>
         {/if}
       {/each}
-    </select>
+    </Dropdown>
     {#if chain.model}
-      <select bind:value={chain.modelOps}>
-        <option value="">Select Model Operation</option>
-        <option value="find">Find</option>
-        <option value="all">Get All</option>
-        <option value="where">Where</option>
-      </select>
+      <Dropdown
+        bind:value={chain.modelOps}
+        placeholder="Select Model Operation"
+      >
+        {#each modelOps as ops}
+          <option value={ops}>{ops.toUpperCase()}</option>
+        {/each}
+      </Dropdown>
     {/if}
   {/if}
   {#if chain.returnType === "response"}
@@ -56,60 +94,50 @@
 </div>
 {#if chain.returnType === "model" && chain.model}
   {#if chain.modelOps === "find"}
-    <input type="text" bind:value={chain.indexValue} placeholder="Index Value" class="mt-1">
+    <input
+      type="text"
+      bind:value={chain.indexValue}
+      placeholder="Index Value"
+      class="mt-1"
+    />
   {/if}
   {#if chain.modelOps === "where"}
     <div class="flex flex-col gap-1 my-1">
       {#each chain.where || [] as where (where.id)}
         <div class="flex gap-1">
           {#if where.connection}
-            <select bind:value={where.connection}>
+            <Dropdown bind:value={where.connection}>
               <option value="and">AND</option>
               <option value="or">OR</option>
-            </select>
+            </Dropdown>
           {/if}
-          <select bind:value={where.field} class="flex-grow">
-            <option value="">Select column</option>
+          <Dropdown
+            bind:value={where.field}
+            class="flex-grow"
+            placeholder="Select Column"
+          >
             {#each selectedModel.columns as column}
               {#if column.name}
                 <option value={column.name}>{column.name}</option>
               {/if}
             {/each}
-          </select>
+          </Dropdown>
           <input
             type="text"
             bind:value={where.operator}
             placeholder="Operator"
           />
-          <input
-            type="text"
-            bind:value={where.value}
-            placeholder="Value"
-          />
-          <button
-            class="flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-            on:click={() =>
-              (chain.where = chain.where.filter((w) => w.id !== where.id))}
-            ><DeleteIcon /></button
+          <input type="text" bind:value={where.value} placeholder="Value" />
+          <Button
+            class="flex justify-center"
+            onclick={() => deleteWhere(where.id)}><DeleteIcon /></Button
           >
         </div>
       {/each}
     </div>
-    <button
-      class="w-full flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={() => {
-        chain.where = [
-          ...(chain.where || []),
-          {
-            id:
-              chain.where && chain.where[chain.where.length - 1]
-                ? chain.where[chain.where.length - 1].id + 1
-                : 0,
-            connection: chain.where && chain.where.length > 0 ? "and" : undefined,
-          },
-        ];
-      }}><AddIcon /></button
-    >
+    <Button class="w-full flex justify-center" onclick={addWhere}>
+      <AddIcon />
+    </Button>
   {/if}
 {/if}
 {#if chain.returnType === "response"}
@@ -123,28 +151,15 @@
             bind:value={session.content}
             placeholder="name: session value"
           />
-          <button
-            class="flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-            on:click={() =>
-              (chain.session = chain.session.filter(
-                (sess) => sess.id !== session.id
-              ))}><DeleteIcon /></button
+          <Button
+            class="flex justify-center"
+            onclick={() => deleteSession(session.id)}><DeleteIcon /></Button
           >
         </div>
       {/each}
     </div>
-    <button
-      class="mt-2 flex justify-center w-full bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      type="button"
-      on:click={() =>
-        (chain.session = [
-          ...(chain.session || []),
-          {
-            id: chain.session[chain.session.length - 1]
-              ? chain.session[chain.session.length - 1].id + 1
-              : 0,
-          },
-        ])}><AddIcon /></button
+    <Button class="mt-2 flex justify-center w-full" onclick={addSession}
+      ><AddIcon /></Button
     >
   {/if}
 {/if}
