@@ -107,7 +107,7 @@
     $zoomLevel += deltaY * -0.0001;
     $zoomLevel = Math.min(Math.max(0.125, $zoomLevel), 4);
     if (content) {
-      content.style.transform = `scale(${$zoomLevel}) translate(${-$origin[0]}px, ${-$origin[1]}px)`;
+      content.style.transform = `scale(${$zoomLevel}) translate(${$origin[0]}px, ${$origin[1]}px)`;
     }
   }
 
