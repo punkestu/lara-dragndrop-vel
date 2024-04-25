@@ -1,7 +1,8 @@
 <script>
   import ModelSection from "./lib/components/Model/section.svelte";
   import ControllerSection from "./lib/components/Controller/section.svelte";
-  import { models, controllers } from "./lib/store/metadata";
+  import RouteSection from "./lib/components/Route/section.svelte";
+  import { models, controllers, routes } from "./lib/store/metadata";
   import { zoomLevel, origin, panning } from "./lib/store/global";
   import Modal from "./lib/components/modal.svelte";
 
@@ -25,10 +26,24 @@
         id: $controllers[$controllers.length - 1]
           ? $controllers[$controllers.length - 1].id + 1
           : 0,
+        cardPosition: { x: $panning[0], y: $panning[1] },
       },
     ];
   };
+  const addRoute = () => {
+    $routes = [
+      ...$routes,
+      {
+        id: $routes[$routes.length - 1]
+          ? $routes[$routes.length - 1].id + 1
+          : 0,
+        cardPosition: { x: $panning[0], y: $panning[1] },
+      },
+    ];
+  };
+
   let downloader;
+  let projectName = "";
   const getMeta = () => {
     downloader.click();
   };
@@ -129,36 +144,54 @@
 
 <a
   bind:this={downloader}
-  href={"data:application/json;charset=utf-8," +
+  href={"data:plain/text;charset=utf-8," +
     encodeURIComponent(
-      compressObject({ models: $models, controllers: $controllers })
+      compressObject({
+        models: $models,
+        controllers: $controllers,
+        routes: $routes,
+      })
     )}
-  download={"metadata.json"}
+  download={`${projectName}.meta`}
   class="hidden">download</a
 >
 
 <Modal></Modal>
 <main>
   <input type="text" class="w-0 h-0 absolute" bind:this={netral} />
-  <header class="w-full bg-blue-500 text-blue-500 flex gap-[1px] h-[2rem]">
-    <button
-      on:click={getMeta}
-      class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
-      >Get Metadata</button
-    >
-    <button
-      on:click={addModel}
-      class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
-      >Add Model</button
-    >
-    <button
-      on:click={addController}
-      class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
-      >Add Controller</button
-    >
+  <header class="w-full flex flex-col bg-blue-500 h-[4rem]">
+    <input
+      type="text"
+      bind:value={projectName}
+      class="text-center bg-transparent border-transparent focus:border-transparent focus:ring-0 focus:border-black duration-300 outline-none placeholder:text-slate-700 p-2"
+      placeholder="Project Name"
+    />
+    <div class="w-full text-blue-500 flex gap-[1px] h-[2rem]">
+      <button
+        on:click={getMeta}
+        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+        >Get Metadata</button
+      >
+      <button
+        on:click={addModel}
+        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+        >Add Model</button
+      >
+      <button
+        on:click={addController}
+        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+        >Add Controller</button
+      >
+      <button
+        on:click={addRoute}
+        class="bg-white px-2 py-1 hover:bg-slate-100 duration-300"
+      >
+        Add Route
+      </button>
+    </div>
   </header>
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <section class="relative h-[calc(100vh-2rem)] overflow-hidden">
+  <section class="relative h-[calc(100vh-4rem)] overflow-hidden">
     <section
       class="absolute w-full h-full"
       on:mousedown={onMouseDown}
@@ -166,6 +199,7 @@
     <section bind:this={content}>
       <ModelSection />
       <ControllerSection />
+      <RouteSection />
     </section>
   </section>
 </main>
