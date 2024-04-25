@@ -34,7 +34,7 @@
   const toggleVisibility = () => (hide = !hide);
 </script>
 
-<Movable bind:position={controller.cardPosition} class="bg-red-600">
+<Movable bind:position={controller.position} class="bg-red-600">
   <aside class="p-4 ps-2 flex flex-col gap-2">
     <div>
       <input

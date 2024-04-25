@@ -24,7 +24,7 @@
   $: controllers = $metadata.filter((meta) => meta.ty === "controller");
 </script>
 
-<Movable bind:position={route.cardPosition} class="bg-white">
+<Movable bind:position={route.position} class="bg-white">
   <aside class="p-4 ps-2 flex flex-col gap-2">
     <div>
       <input

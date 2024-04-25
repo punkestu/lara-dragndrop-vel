@@ -9,6 +9,10 @@ export const negateCoord = (coord) => {
   return [coord[0] * -1, coord[1] * -1];
 };
 
+export const coordArr2Obj = (coordArr) => {
+  return { x: coordArr[0], y: coordArr[1] };
+};
+
 export const generateMetadataJSON = (metadata) => {
   metadata = metadata.reduce(
     (acc, curr) => {

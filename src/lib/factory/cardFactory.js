@@ -6,21 +6,21 @@ export const cardFactory = (type, position) => {
       return {
         ty: "model",
         id: UUID(),
-        position: [...position],
+        position: position,
         columns: [],
       };
     case "controller":
       return {
         ty: "controller",
         id: UUID(),
-        position: [...position],
+        position: position,
         methods: [],
       };
     case "route":
       return {
         ty: "route",
         id: UUID(),
-        position: [...position],
+        position: position,
         middlewares: [],
       };
   }

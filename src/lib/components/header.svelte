@@ -2,7 +2,7 @@
   import { metadata } from "../store/metadata";
   import { origin } from "../store/global";
   import { cardFactory } from "../factory/cardFactory";
-  import { negateCoord } from "../functions";
+  import { coordArr2Obj, negateCoord } from "../functions";
   import {
     Add as AddIcon,
     Download as DownloadIcon,
@@ -13,13 +13,22 @@
   let projectName = "";
 
   const addModel = () => {
-    $metadata = [...$metadata, cardFactory("model", negateCoord($origin))];
+    $metadata = [
+      ...$metadata,
+      cardFactory("model", coordArr2Obj(negateCoord($origin))),
+    ];
   };
   const addController = () => {
-    $metadata = [...$metadata, cardFactory("controller", negateCoord($origin))];
+    $metadata = [
+      ...$metadata,
+      cardFactory("controller", coordArr2Obj(negateCoord($origin))),
+    ];
   };
   const addRoute = () => {
-    $metadata = [...$metadata, cardFactory("route", negateCoord($origin))];
+    $metadata = [
+      ...$metadata,
+      cardFactory("route", coordArr2Obj(negateCoord($origin))),
+    ];
   };
   const getMeta = () => {
     downloader.click();
