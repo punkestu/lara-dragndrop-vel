@@ -1,5 +1,5 @@
 <script>
-  import { models } from "../../store/metadata";
+  import { metadata } from "../../store/metadata";
   import { Types } from "./const";
   import {
     Delete as DeleteIcon,
@@ -10,6 +10,8 @@
   export let column;
   export let onDeleteColumn;
 
+  let hide = false;
+  
   const clearColumn = (column) => {
     if (column.type === "string") {
       column.length = column.length === undefined ? 255 : column.length;
@@ -22,10 +24,10 @@
       column.relation = undefined;
     }
   };
+  const toggleVisibility = () => (hide = !hide);
 
   $: clearColumn(column);
-  let hide = false;
-  const toggleVisibility = () => (hide = !hide);
+  $: models = $metadata.filter((meta) => meta.ty === "model");
 </script>
 
 <div class="w-full flex gap-1">
@@ -52,6 +54,7 @@
   />
   {#if !hide}
     <select bind:value={column.type}>
+      <option value="">Select Type</option>
       {#each Types as type}
         <option value={type}>{type.toUpperCase()}</option>
       {/each}
@@ -67,7 +70,7 @@
     {#if column.type === "foreignId"}
       <select bind:value={column.relation}>
         <option value="">Select a model</option>
-        {#each $models as cModel (cModel.id)}
+        {#each models as cModel (cModel.id)}
           <option value={cModel.name}>{cModel.name || "no-name"}</option>
         {/each}
       </select>

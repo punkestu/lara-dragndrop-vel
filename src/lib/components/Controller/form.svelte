@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { controllers } from "../../store/metadata";
+  import { metadata } from "../../store/metadata";
   import Movable from "../movable.svelte";
   import Method from "./method.svelte";
   import {
@@ -9,27 +9,21 @@
     View as ViewIcon,
     ViewOff as ViewOffIcon,
   } from "carbon-icons-svelte";
+  import { utilFactory } from "../../factory/utilFactory";
+
   export let controller;
 
   onMount(() => {
     controller.methods = controller.methods || [];
   });
 
-  const deleteController = () =>
-    ($controllers = $controllers.filter(
-      (cController) => cController.id !== controller.id
-    ));
+  let hide = false;
+  const deleteController = () => {
+    confirm("Are you sure you want to delete this controller?") &&
+      ($metadata = $metadata.filter((cMeta) => cMeta.id !== controller.id));
+  };
   const addMethod = () => {
-    controller.methods = [
-      ...controller.methods,
-      {
-        id: controller.methods[controller.methods.length - 1]
-          ? controller.methods[controller.methods.length - 1].id + 1
-          : 0,
-        chain: [],
-        name: "",
-      },
-    ];
+    controller.methods = [...controller.methods, utilFactory("method")];
     hide = false;
   };
   const deleteMethod = (id) => {
@@ -37,7 +31,6 @@
       (cMethod) => cMethod.id !== id
     );
   };
-  let hide = false;
   const toggleVisibility = () => (hide = !hide);
 </script>
 
@@ -55,10 +48,7 @@
       <button
         class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
         type="button"
-        on:click={() => {
-          confirm("Are you sure you want to delete this controller?") &&
-            deleteController();
-        }}><DeleteIcon /></button
+        on:click={deleteController}><DeleteIcon /></button
       >
       <button
         class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"

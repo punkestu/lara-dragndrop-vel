@@ -7,6 +7,7 @@
     View as ViewIcon,
     ViewOff as ViewOffIcon,
   } from "carbon-icons-svelte";
+  import { utilFactory } from "../../factory/utilFactory";
 
   export let method;
   export let onDelete;
@@ -16,6 +17,13 @@
   });
 
   let hide = false;
+
+  const addChain = () => {
+    method.chain = [...method.chain, utilFactory("chain")];
+  };
+  const deleteChain = (id) => {
+    method.chain = method.chain.filter((chain) => chain.id !== id);
+  };
   const toggleVisibility = () => (hide = !hide);
 </script>
 
@@ -45,19 +53,11 @@
   </div>
   {#if !hide}
     {#each method.chain as chain (chain.id)}
-      <Chain
-        {chain}
-        onDelete={() =>
-          (method.chain = method.chain.filter(
-            (cChain) => cChain.id !== chain.id
-          ))}
-      />
+      <Chain {chain} onDelete={() => deleteChain(chain.id)} />
     {/each}
     <button
       class="flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
-      on:click={() =>
-        (method.chain = [...method.chain, { id: method.chain.length }])}
-      ><AddIcon /></button
+      on:click={addChain}><AddIcon /></button
     >
   {/if}
 </div>

@@ -1,5 +1,5 @@
 <script>
-  import { models } from "../../store/metadata";
+  import { metadata } from "../../store/metadata";
   import { onMount } from "svelte";
   import Column from "./column.svelte";
   import Movable from "../movable.svelte";
@@ -9,30 +9,25 @@
     View as ViewIcon,
     ViewOff as ViewOffIcon,
   } from "carbon-icons-svelte";
+  import { utilFactory } from "../../factory/utilFactory";
+
   export let model;
 
   onMount(() => {
     model.columns = model.columns || [];
-    // console.log(model.cardPosition);
   });
 
+  let hide = false;
   const deleteModel = () =>
-    ($models = $models.filter((cModel) => cModel.id !== model.id));
+    confirm("Are you sure you want to delete this model?") &&
+    ($metadata = $metadata.filter((cMeta) => cMeta.id !== model.id));
   const addColumn = () => {
-    model.columns = [
-      ...model.columns,
-      {
-        id: model.columns[model.columns.length - 1]
-          ? model.columns[model.columns.length - 1].id + 1
-          : 0,
-      },
-    ];
+    model.columns = [...model.columns, utilFactory("column")];
     hide = false;
   };
   const deleteColumn = (id) => {
     model.columns = model.columns.filter((cColumn) => cColumn.id !== id);
   };
-  let hide = false;
   const toggleVisibility = () => (hide = !hide);
 </script>
 
@@ -50,10 +45,7 @@
       <button
         class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
         type="button"
-        on:click={() => {
-          confirm("Are you sure you want to delete this model?") &&
-            deleteModel();
-        }}><DeleteIcon /></button
+        on:click={deleteModel}><DeleteIcon /></button
       >
       <button
         class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"

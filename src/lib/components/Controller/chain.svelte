@@ -8,6 +8,7 @@
   import Declare from "./methods/declare.svelte";
   import Return from "./methods/return.svelte";
   import If from "./methods/if.svelte";
+  import { chainCmd } from "./const";
 
   export let chain;
   export let onDelete;
@@ -16,7 +17,9 @@
     chain.session = chain.session || [];
   });
 
-  $: (() => {
+  let hide = false;
+  const toggleVisibility = () => (hide = !hide);
+  const cmdTrigger = () => {
     if (chain.type === "if") {
       chain.validChain = chain.validChain || [[], []];
     } else {
@@ -27,18 +30,18 @@
     } else {
       chain.chain = undefined;
     }
-  })();
-
-  let hide = false;
-  const toggleVisibility = () => (hide = !hide);
+  };
+  
+  $: cmdTrigger();
 </script>
 
 <div class="p-2 ps-4 border">
   <div class="flex gap-2">
     <select bind:value={chain.type}>
-      <option value="declare">Declare</option>
-      <option value="return">Return</option>
-      <option value="if">If</option>
+      <option value="">Select Command</option>
+      {#each chainCmd as cmd}
+        <option value={cmd}>{cmd.toUpperCase()}</option>
+      {/each}
     </select>
     <button
       class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"

@@ -6,19 +6,22 @@
     View as ViewIcon,
     ViewOff as ViewOffIcon,
   } from "carbon-icons-svelte";
-  import { routes, controllers } from "../../store/metadata";
+  import { metadata } from "../../store/metadata";
+  import { httpMethods } from "./const";
 
   export let route;
 
-  const deleteModel = () =>
-    ($routes = $routes.filter((cRoute) => cRoute.id !== route.id));
+  const deleteRoute = () =>
+    confirm("Are you sure you want to delete this route?") &&
+    ($metadata = $metadata.filter((cMeta) => cMeta.id !== route.id));
   let hide = false;
   const toggleVisibility = () => (hide = !hide);
 
   $: route.method = route.controller && (route.method || "");
-  $: selectedController = $controllers.find(
-    (controller) => controller.name === route.controller
+  $: selectedController = $metadata.find(
+    (meta) => meta.ty === "controller" && meta.name === route.controller
   );
+  $: controllers = $metadata.filter((meta) => meta.ty === "controller");
 </script>
 
 <Movable bind:position={route.cardPosition} class="bg-white">
@@ -32,10 +35,9 @@
       />
       <select bind:value={route.httpMethod}>
         <option value="">Method</option>
-        <option value="GET">GET</option>
-        <option value="POST">POST</option>
-        <option value="PUT">PUT</option>
-        <option value="DELETE">DELETE</option>
+        {#each httpMethods as meth}
+          <option value={meth}>{meth.toUpperCase()}</option>
+        {/each}
       </select>
       <label>
         <input type="checkbox" bind:checked={route.api} />
@@ -46,10 +48,7 @@
       <button
         class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
         type="button"
-        on:click={() => {
-          confirm("Are you sure you want to delete this route?") &&
-            deleteModel();
-        }}><DeleteIcon /></button
+        on:click={deleteRoute}><DeleteIcon /></button
       >
       <button
         class="bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
@@ -70,7 +69,7 @@
       <div>
         <select bind:value={route.controller}>
           <option value="">Select Controller</option>
-          {#each $controllers as controller}
+          {#each controllers as controller}
             {#if controller.name}
               <option value={controller.name}>{controller.name}</option>
             {/if}

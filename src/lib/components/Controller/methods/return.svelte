@@ -1,16 +1,21 @@
 <script>
   import { Add as AddIcon, Delete as DeleteIcon } from "carbon-icons-svelte";
-  import { models } from "../../../store/metadata";
+  import { metadata } from "../../../store/metadata";
+  import { returnType } from "../const";
   export let chain;
 
-  $: selectedModel = $models.find((model) => model.name === chain.model);
+  $: selectedModel = $metadata.find(
+    (meta) => meta.ty === "model" && meta.name === chain.model
+  );
+  $: models = $metadata.filter((meta) => meta.ty === "model");
 </script>
 
 <div class="flex">
   <select bind:value={chain.returnType}>
-    <option value="expression">Expression</option>
-    <option value="model">Model</option>
-    <option value="response">Response</option>
+    <option value="">Select Return Type</option>
+    {#each returnType as ty}
+      <option value={ty}>{ty.toUpperCase()}</option>
+    {/each}
   </select>
   {#if chain.returnType === "expression"}
     <input
@@ -21,12 +26,12 @@
   {/if}
   {#if chain.returnType === "model"}
     <select bind:value={chain.model}>
-      {#if $models && $models.filter((model) => model.name).length === 0}
+      {#if models.filter((meta) => meta.name).length === 0}
         <option value="">No Models</option>
       {:else}
         <option value="">Select Model</option>
       {/if}
-      {#each $models as model}
+      {#each models as model}
         {#if model.name}
           <option value={model.name}>{model.name}</option>
         {/if}
@@ -56,7 +61,12 @@
 </div>
 {#if chain.returnType === "model" && chain.model}
   {#if chain.modelOps === "find"}
-    <input type="text" bind:value={chain.indexValue} placeholder="Index Value" class="mt-1">
+    <input
+      type="text"
+      bind:value={chain.indexValue}
+      placeholder="Index Value"
+      class="mt-1"
+    />
   {/if}
   {#if chain.modelOps === "where"}
     <div class="flex flex-col gap-1 my-1">
@@ -81,11 +91,7 @@
             bind:value={where.operator}
             placeholder="Operator"
           />
-          <input
-            type="text"
-            bind:value={where.value}
-            placeholder="Value"
-          />
+          <input type="text" bind:value={where.value} placeholder="Value" />
           <button
             class="flex justify-center bg-blue-300 text-slate-900 px-2 py-1 rounded-md hover:bg-blue-400 duration-300"
             on:click={() =>
@@ -105,7 +111,8 @@
               chain.where && chain.where[chain.where.length - 1]
                 ? chain.where[chain.where.length - 1].id + 1
                 : 0,
-            connection: chain.where && chain.where.length > 0 ? "and" : undefined,
+            connection:
+              chain.where && chain.where.length > 0 ? "and" : undefined,
           },
         ];
       }}><AddIcon /></button
