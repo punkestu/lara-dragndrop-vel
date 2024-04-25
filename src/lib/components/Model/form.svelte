@@ -13,6 +13,7 @@
 
   onMount(() => {
     model.columns = model.columns || [];
+    // console.log(model.cardPosition);
   });
 
   const deleteModel = () =>

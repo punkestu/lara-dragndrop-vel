@@ -7,8 +7,8 @@
   export { className as class };
 
   onMount(() => {
-    card.style.top = position ? position.x : 0;
-    card.style.left = position ? position.y : 0;
+    card.style.top = (position ? position.y : 0) + "px";
+    card.style.left = (position ? position.x : 0) + "px";
   });
 
   let newX = 0,

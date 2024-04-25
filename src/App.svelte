@@ -8,6 +8,7 @@
 
   import { compressSync, strToU8 } from "fflate";
 
+  let clientWidth, clientHeight;
   const addModel = () => {
     $models = [
       ...$models,
@@ -15,7 +16,10 @@
         id: $models[$models.length - 1]
           ? $models[$models.length - 1].id + 1
           : 0,
-        cardPosition: { x: $panning[0], y: $panning[1] },
+        cardPosition: {
+          x: -$origin[0],
+          y: -$origin[1],
+        },
       },
     ];
   };
@@ -26,7 +30,7 @@
         id: $controllers[$controllers.length - 1]
           ? $controllers[$controllers.length - 1].id + 1
           : 0,
-        cardPosition: { x: $panning[0], y: $panning[1] },
+        cardPosition: { x: -$origin[0], y: -$origin[1] },
       },
     ];
   };
@@ -37,7 +41,7 @@
         id: $routes[$routes.length - 1]
           ? $routes[$routes.length - 1].id + 1
           : 0,
-        cardPosition: { x: $panning[0], y: $panning[1] },
+        cardPosition: { x: -$origin[0], y: -$origin[1] },
       },
     ];
   };
@@ -100,7 +104,7 @@
     $zoomLevel += deltaY * -0.0001;
     $zoomLevel = Math.min(Math.max(0.125, $zoomLevel), 4);
     if (content) {
-      content.style.transform = `scale(${$zoomLevel}) translate(${$origin[0]}px, ${$origin[1]}px)`;
+      content.style.transform = `scale(${$zoomLevel}) translate(${-$origin[0]}px, ${-$origin[1]}px)`;
     }
   }
 
@@ -194,6 +198,8 @@
   <section class="relative h-[calc(100vh-4rem)] overflow-hidden">
     <section
       class="absolute w-full h-full"
+      bind:clientWidth
+      bind:clientHeight
       on:mousedown={onMouseDown}
     ></section>
     <section bind:this={content}>
